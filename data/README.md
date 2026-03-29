@@ -7,6 +7,8 @@ ScreenLot now has an open-data pipeline based on:
 
 ## Local layout
 
+- `data/app/screenlot-demo/`
+  Stores the lightweight tracked demo bundle that powers the public repo out of the box.
 - `data/raw/movielens/`
   Stores the official MovieLens 32M archive, checksum, README, and extracted CSV files.
 - `data/interim/wikidata/`
@@ -14,7 +16,7 @@ ScreenLot now has an open-data pipeline based on:
 - `data/processed/screenlot/`
   Stores the merged ScreenLot-ready catalog and summary tables.
 
-These folders are intentionally ignored by git because the files are large and generated locally.
+`data/raw/`, `data/interim/`, and `data/processed/` are intentionally ignored by git because the files are large and generated locally. The `data/app/screenlot-demo/` folder is the exception because it is a compact deployment-ready sample bundle.
 
 ## Pipeline commands
 
@@ -49,3 +51,4 @@ From the repository root:
 - The original notebook-era `movie_recommendation_data/` flow is still documented for backward compatibility.
 - MovieLens 32M is much newer and larger than the original competition snapshot used in the notebooks.
 - Wikidata enrichment is designed to be incremental so it can resume without starting over.
+- Set `SCREENLOT_DATA_DIR` if you want the app to use a different dataset folder than the packaged demo bundle.

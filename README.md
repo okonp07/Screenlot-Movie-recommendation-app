@@ -8,6 +8,7 @@ ScreenLot is the product layer for the original movie recommendation project in 
 - `screenlot/`: reusable app, data, EDA, and recommendation modules.
 - `assets/`: extracted branding, contributor photos, and presentation-derived visuals.
 - `notebooks/`: companion notebooks that explain the EDA and modeling work.
+- `data/app/screenlot-demo/`: lightweight packaged dataset so the public app runs immediately after clone.
 - `data/README.md`: instructions for staging the original project CSV files.
 - `Model pickles.zip`: archived collaborative filtering artifacts from the original work.
 - Original notebooks and presentation decks for reference.
@@ -64,6 +65,18 @@ Quick start:
 2. `python3 scripts/enrich_wikidata_movies.py --limit 500`
 3. `python3 scripts/build_screenlot_catalog.py`
 
+## Packaged demo data
+
+The public repository now includes a tracked first-run dataset at `data/app/screenlot-demo/`.
+
+It contains:
+
+- a sampled `ratings.csv`
+- a ScreenLot-ready `movies.csv` with metadata columns used by the app
+- a filtered `links.csv`
+
+This means a fresh clone can launch ScreenLot without first downloading the full MovieLens 32M archive.
+
 ## Modeling Pipeline
 
 The repository now includes an offline benchmarking and artifact-generation script for ScreenLot:
@@ -86,11 +99,16 @@ Default training is intentionally sample-sized for iteration speed. The `--max-r
 
    `pip install -r requirements.txt`
 
-2. Add the original project CSV files to `movie_recommendation_data/` in the repo root.
-
-3. Launch ScreenLot:
+2. Launch ScreenLot:
 
    `streamlit run app.py`
+
+The app uses the packaged demo bundle by default. To run against the full staged MovieLens data instead:
+
+```bash
+export SCREENLOT_DATA_DIR=/absolute/path/to/data/raw/movielens/ml-32m
+streamlit run app.py
+```
 
 ## Companion notebooks
 
@@ -123,18 +141,14 @@ User feedback from the recommendation page is persisted as JSON Lines so likes, 
 
 ## Data expectations
 
-Minimum files for the first working experience:
+First-run experience:
 
-- `movie_recommendation_data/train.csv`
-- `movie_recommendation_data/movies.csv`
+- use the packaged `data/app/screenlot-demo/` bundle already committed to the repo
 
-Recommended for a stronger recommendation engine and richer EDA:
+Full-data experience:
 
-- `movie_recommendation_data/imdb_data.csv`
-- `movie_recommendation_data/links.csv`
-- `movie_recommendation_data/test.csv`
-- `movie_recommendation_data/genome_scores.csv`
-- `movie_recommendation_data/genome_tags.csv`
+- stage MovieLens 32M and optional Wikidata enrichment under `data/raw/`, `data/interim/`, and `data/processed/`
+- point `SCREENLOT_DATA_DIR` at the extracted MovieLens folder when you want the larger catalog
 
 ## Notes
 
@@ -143,3 +157,4 @@ Recommended for a stronger recommendation engine and richer EDA:
 - The original repo snapshot included notebooks only; this pass begins the conversion into a maintainable application.
 - The archived collaborative models remain optional at runtime because some environments may not have the dependencies needed to unpickle them.
 - The open-data pipeline is designed so we can move off the older Kaggle-era snapshot and build the next model version on MovieLens 32M plus Wikidata.
+- The public repo uses a bundled demo dataset by default so the deployed app does not come up empty after a clean clone.

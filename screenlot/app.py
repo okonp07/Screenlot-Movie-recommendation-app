@@ -44,11 +44,12 @@ from .model_summary import (
     model_snapshot,
 )
 from .recommender import (
+    ResilientRecommendationEngine,
     ScreenLotHybridRecommender,
     load_archived_collaborative_model,
     load_trained_screenlot_artifact,
 )
-from .runtime import FEEDBACK_LOG_PATH, STATE_DIR
+from .runtime import FEEDBACK_LOG_PATH, FULL_DATA_DIR, PACKAGED_DATA_DIR, STATE_DIR
 from .styles import GLOBAL_CSS
 
 
@@ -88,12 +89,16 @@ def _load_saved_model_card():
 @st.cache_resource(show_spinner=False)
 def _load_recommender(data_dir: str):
     bundle, catalog = _load_bundle(data_dir)
+    collaborative_model, collaborative_status = load_archived_collaborative_model(MODEL_ARCHIVE)
+    fallback_engine = ScreenLotHybridRecommender(catalog, collaborative_model=collaborative_model)
     trained_artifact, trained_status = load_trained_screenlot_artifact()
     if trained_artifact is not None:
-        return trained_artifact, trained_status
-    collaborative_model, collaborative_status = load_archived_collaborative_model(MODEL_ARCHIVE)
-    engine = ScreenLotHybridRecommender(catalog, collaborative_model=collaborative_model)
-    return engine, collaborative_status
+        engine = ResilientRecommendationEngine(
+            primary_engine=trained_artifact,
+            fallback_engine=fallback_engine,
+        )
+        return engine, f"{trained_status} | Fallback engine ready: {collaborative_status}"
+    return fallback_engine, collaborative_status
 
 
 def _metric_card(label: str, value: str) -> str:
@@ -459,8 +464,10 @@ def _render_home(
         )
     else:
         st.info(
-            "Run the open-data pipeline so `ratings.csv` and `movies.csv` are staged in "
-            "`data/raw/movielens/ml-32m/`, then reload the app."
+            "ScreenLot expects a local data folder with `ratings.csv` and `movies.csv`. "
+            "The public repo now ships with a packaged demo bundle in "
+            "`data/app/screenlot-demo/`, and you can point to the full MovieLens staging "
+            "folder later with `SCREENLOT_DATA_DIR`."
         )
 
     _render_model_snapshot(snapshot)
@@ -496,8 +503,9 @@ def _render_recommendations(
 
     if engine is None or catalog is None:
         st.warning(
-            "The recommendation engine is waiting for local source data. Stage the "
-            "MovieLens 32M pipeline and reload the app."
+            "The recommendation engine is waiting for local source data. Keep the packaged "
+            "demo bundle in `data/app/screenlot-demo/` or set `SCREENLOT_DATA_DIR` to a "
+            "MovieLens folder and reload the app."
         )
         return
 
@@ -859,6 +867,9 @@ def _render_report(
         "The app now supports environment-driven data, artifact, and feedback paths so the same code can move "
         "from this local repo into a hosted Streamlit deployment more cleanly."
     )
+    st.caption(
+        f"Packaged demo data: {PACKAGED_DATA_DIR} | Full-data override target: {FULL_DATA_DIR}"
+    )
 
 
 def _render_suggestions() -> None:
@@ -892,6 +903,9 @@ def _render_suggestions() -> None:
     st.caption(
         "ScreenLot now reads its data and persistence paths from environment-friendly runtime settings, "
         "which makes it easier to deploy outside this workstation."
+    )
+    st.caption(
+        f"Default packaged data: {PACKAGED_DATA_DIR} | Optional full dataset: {FULL_DATA_DIR}"
     )
 
 

@@ -5,6 +5,8 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PACKAGED_DATA_DIR = PROJECT_ROOT / "data" / "app" / "screenlot-demo"
+FULL_DATA_DIR = PROJECT_ROOT / "data" / "raw" / "movielens" / "ml-32m"
 
 
 def _resolve_path(env_name: str, default: Path) -> Path:
@@ -14,7 +16,7 @@ def _resolve_path(env_name: str, default: Path) -> Path:
 
 DEFAULT_DATA_DIR = _resolve_path(
     "SCREENLOT_DATA_DIR",
-    PROJECT_ROOT / "data" / "raw" / "movielens" / "ml-32m",
+    PACKAGED_DATA_DIR if PACKAGED_DATA_DIR.exists() else FULL_DATA_DIR,
 )
 ARTIFACTS_DIR = _resolve_path(
     "SCREENLOT_ARTIFACT_DIR",

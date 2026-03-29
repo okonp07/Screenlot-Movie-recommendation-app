@@ -7,8 +7,12 @@ from pathlib import Path
 from typing import Any
 import zipfile
 
-import joblib
 import numpy as np
+
+try:
+    import joblib
+except ImportError:  # pragma: no cover - handled at runtime in the app.
+    joblib = None
 
 try:
     import pandas as pd
@@ -30,6 +34,31 @@ from .modeling import TRAINED_HYBRID_ARTIFACT
 class RecommendationEngineStatus:
     collaborative_model_loaded: bool
     collaborative_model_name: str
+
+
+class ResilientRecommendationEngine:
+    def __init__(self, primary_engine: Any | None, fallback_engine: Any | None = None) -> None:
+        self.primary_engine = primary_engine
+        self.fallback_engine = fallback_engine
+
+    def recommend_from_titles(self, *args: Any, **kwargs: Any) -> Any:
+        errors: list[str] = []
+
+        if self.primary_engine is not None:
+            try:
+                return self.primary_engine.recommend_from_titles(*args, **kwargs)
+            except Exception as exc:  # pragma: no cover - depends on runtime model state.
+                errors.append(str(exc))
+
+        if self.fallback_engine is not None:
+            try:
+                return self.fallback_engine.recommend_from_titles(*args, **kwargs)
+            except Exception as exc:  # pragma: no cover - depends on runtime model state.
+                errors.append(str(exc))
+
+        if errors:
+            raise RuntimeError(" | ".join(errors))
+        raise RuntimeError("No recommendation engine is available.")
 
 
 def _require_runtime() -> None:
@@ -64,6 +93,8 @@ def load_archived_collaborative_model(model_archive: Path = MODEL_ARCHIVE) -> tu
 def load_trained_screenlot_artifact(artifact_path: Path = TRAINED_HYBRID_ARTIFACT) -> tuple[Any | None, str]:
     if not artifact_path.exists():
         return None, "No trained ScreenLot artifact found"
+    if joblib is None:
+        return None, "Trained artifact unavailable: joblib is not installed"
     try:
         model = joblib.load(artifact_path)
         label = model.model_label() if hasattr(model, "model_label") else "trained ScreenLot artifact"
