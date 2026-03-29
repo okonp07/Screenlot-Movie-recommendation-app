@@ -444,6 +444,17 @@ h1, h2, h3, h4, .hero-title, .banner-title {
     filter: var(--screenlot-wordmark-filter);
 }
 
+.screenlot-banner-shell {
+    margin-bottom: 1.25rem;
+}
+
+.screenlot-banner-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 24px;
+}
+
 .contributor-card {
     background: linear-gradient(180deg, var(--screenlot-surface-soft) 0%, var(--screenlot-surface-strong) 100%);
     border: 1px solid var(--screenlot-edge);

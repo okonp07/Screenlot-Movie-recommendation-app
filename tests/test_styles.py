@@ -34,6 +34,7 @@ class ScreenLotStyleTests(unittest.TestCase):
         self.assertIn("--screenlot-table-text: #000000;", css)
         self.assertIn("--screenlot-table-row-bg: rgba(255, 255, 255, 0);", css)
         self.assertIn("--screenlot-wordmark-filter: brightness(0) saturate(100%) opacity(0.92);", css)
+        self.assertIn(".screenlot-banner-image", css)
 
 
 if __name__ == "__main__":

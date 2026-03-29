@@ -79,11 +79,16 @@ def _inline_image_markup(path: Path, class_name: str = "") -> str:
 
 def _render_banner_image(theme_mode: str) -> None:
     banner_asset = SCREENLOT_BANNER_LIGHT if theme_mode == "light" else SCREENLOT_BANNER_DARK
-    banner_path = _safe_image(banner_asset)
-    if banner_path is None:
-        banner_path = _safe_image(SCREENLOT_BANNER)
-    if banner_path:
-        st.image(banner_path, use_container_width=True)
+    banner_path = banner_asset if banner_asset.exists() else SCREENLOT_BANNER
+    if banner_path.exists():
+        st.markdown(
+            (
+                "<div class='screenlot-banner-shell'>"
+                f"{_inline_image_markup(banner_path, 'screenlot-banner-image')}"
+                "</div>"
+            ),
+            unsafe_allow_html=True,
+        )
 
 
 def _current_theme_mode() -> str:
