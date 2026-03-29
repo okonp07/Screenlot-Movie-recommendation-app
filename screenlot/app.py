@@ -16,7 +16,6 @@ from .content import (
     DATAPORT_WORDMARK,
     DEFAULT_DATA_DIR,
     ECONOMIC_VALUE,
-    FEATURE_PILLARS,
     MODEL_ARCHIVE,
     MODEL_STRATEGY,
     NAVIGATION,
@@ -437,9 +436,6 @@ def _render_home(
                 "<div class='kicker'>ScreenLot</div>"
                 f"<div class='hero-title'>{APP_NAME} turns this recommendation project into a premium discovery experience.</div>"
                 f"<div class='hero-copy'>{APP_TAGLINE}</div>"
-                "<div class='pill-strip'>"
-                + "".join(f"<div class='pill'>{pillar}</div>" for pillar in FEATURE_PILLARS)
-                + "</div>"
                 "</div>"
             ),
             unsafe_allow_html=True,
