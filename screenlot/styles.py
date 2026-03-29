@@ -46,6 +46,7 @@ _THEME_TOKENS: dict[str, dict[str, Any]] = {
         "chart_plot_bg": "rgba(17, 15, 24, 0.72)",
         "chart_grid_color": "rgba(178, 166, 199, 0.16)",
         "chart_legend_bg": "rgba(17, 15, 24, 0.45)",
+        "chart_font_color": "#f5efff",
     },
     "light": {
         "color_scheme": "light",
@@ -84,9 +85,10 @@ _THEME_TOKENS: dict[str, dict[str, Any]] = {
         "card_shadow": "0 22px 48px rgba(80, 55, 110, 0.10)",
         "metric_shadow": "0 14px 30px rgba(80, 55, 110, 0.08)",
         "chart_paper_bg": "rgba(255, 255, 255, 0)",
-        "chart_plot_bg": "#ffffff",
+        "chart_plot_bg": "rgba(255, 255, 255, 0)",
         "chart_grid_color": "rgba(123, 108, 150, 0.12)",
-        "chart_legend_bg": "rgba(255, 255, 255, 0.85)",
+        "chart_legend_bg": "rgba(255, 255, 255, 0)",
+        "chart_font_color": "#000000",
     },
 }
 
@@ -108,15 +110,23 @@ def plotly_layout(mode: str | None) -> dict[str, Any]:
         "template": plotly_template(mode),
         "paper_bgcolor": tokens["chart_paper_bg"],
         "plot_bgcolor": tokens["chart_plot_bg"],
-        "font": {"color": tokens["screenlot_ink"]},
-        "legend": {"bgcolor": tokens["chart_legend_bg"]},
+        "font": {"color": tokens["chart_font_color"]},
+        "title": {"font": {"color": tokens["chart_font_color"]}},
+        "legend": {
+            "bgcolor": tokens["chart_legend_bg"],
+            "font": {"color": tokens["chart_font_color"]},
+        },
         "xaxis": {
             "gridcolor": tokens["chart_grid_color"],
             "zerolinecolor": tokens["chart_grid_color"],
+            "tickfont": {"color": tokens["chart_font_color"]},
+            "title": {"font": {"color": tokens["chart_font_color"]}},
         },
         "yaxis": {
             "gridcolor": tokens["chart_grid_color"],
             "zerolinecolor": tokens["chart_grid_color"],
+            "tickfont": {"color": tokens["chart_font_color"]},
+            "title": {"font": {"color": tokens["chart_font_color"]}},
         },
     }
 
