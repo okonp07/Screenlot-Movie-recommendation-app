@@ -10,7 +10,7 @@ except ImportError:  # pragma: no cover - handled at runtime in the app.
     px = None
 
 from .model_summary import humanize_model_name, leaderboard_rows
-from .styles import plotly_template
+from .styles import plotly_layout
 
 
 PALETTE = ["#d9a441", "#4bb3c3", "#d45769", "#7cd38b", "#f4ead5"]
@@ -19,6 +19,13 @@ PALETTE = ["#d9a441", "#4bb3c3", "#d45769", "#7cd38b", "#f4ead5"]
 def _require_runtime() -> None:
     if pd is None or px is None:
         raise RuntimeError("plotly and pandas are required for the ScreenLot EDA views.")
+
+
+def _apply_visual_theme(figure: Any, theme_mode: str, **extra_layout: Any) -> Any:
+    figure.update_layout(**plotly_layout(theme_mode))
+    if extra_layout:
+        figure.update_layout(**extra_layout)
+    return figure
 
 
 def ratings_distribution(train: Any, theme_mode: str = "dark") -> Any:
@@ -30,8 +37,7 @@ def ratings_distribution(train: Any, theme_mode: str = "dark") -> Any:
         title="Distribution of User Ratings",
         color_discrete_sequence=[PALETTE[0]],
     )
-    figure.update_layout(template=plotly_template(theme_mode), bargap=0.08)
-    return figure
+    return _apply_visual_theme(figure, theme_mode, bargap=0.08)
 
 
 def movies_per_year(catalog: Any, theme_mode: str = "dark") -> Any:
@@ -50,8 +56,7 @@ def movies_per_year(catalog: Any, theme_mode: str = "dark") -> Any:
         title="Movies Released Per Year",
     )
     figure.update_traces(line_color=PALETTE[1])
-    figure.update_layout(template=plotly_template(theme_mode))
-    return figure
+    return _apply_visual_theme(figure, theme_mode)
 
 
 def genre_distribution(catalog: Any, top_n: int = 12, theme_mode: str = "dark") -> Any:
@@ -74,8 +79,7 @@ def genre_distribution(catalog: Any, top_n: int = 12, theme_mode: str = "dark") 
         color="movie_count",
         color_continuous_scale=["#2e425c", "#d9a441"],
     )
-    figure.update_layout(template=plotly_template(theme_mode), coloraxis_showscale=False)
-    return figure
+    return _apply_visual_theme(figure, theme_mode, coloraxis_showscale=False)
 
 
 def top_rated_movies(
@@ -100,8 +104,7 @@ def top_rated_movies(
         color="rating_count",
         color_continuous_scale=["#4bb3c3", "#d9a441"],
     )
-    figure.update_layout(template=plotly_template(theme_mode), coloraxis_showscale=False)
-    return figure
+    return _apply_visual_theme(figure, theme_mode, coloraxis_showscale=False)
 
 
 def top_directors(catalog: Any, top_n: int = 10, theme_mode: str = "dark") -> Any | None:
@@ -136,8 +139,7 @@ def top_directors(catalog: Any, top_n: int = 10, theme_mode: str = "dark") -> An
         title="Most Frequent Directors",
         color_discrete_sequence=[PALETTE[2]],
     )
-    figure.update_layout(template=plotly_template(theme_mode))
-    return figure
+    return _apply_visual_theme(figure, theme_mode)
 
 
 def benchmark_metric_bars(
@@ -168,8 +170,7 @@ def benchmark_metric_bars(
         title=f"{split.title()} Ranking Metrics",
         color_discrete_sequence=PALETTE[:3],
     )
-    figure.update_layout(template=plotly_template(theme_mode), legend_title_text="")
-    return figure
+    return _apply_visual_theme(figure, theme_mode, legend_title_text="")
 
 
 def benchmark_tradeoff_scatter(
@@ -195,8 +196,7 @@ def benchmark_tradeoff_scatter(
         title=f"{split.title()} Coverage vs Recall",
         color_discrete_sequence=PALETTE,
     )
-    figure.update_layout(template=plotly_template(theme_mode))
-    return figure
+    return _apply_visual_theme(figure, theme_mode)
 
 
 def feedback_actions_chart(feedback_frame: Any, theme_mode: str = "dark") -> Any | None:
@@ -221,8 +221,7 @@ def feedback_actions_chart(feedback_frame: Any, theme_mode: str = "dark") -> Any
         color="action",
         color_discrete_sequence=PALETTE[:3],
     )
-    figure.update_layout(template=plotly_template(theme_mode), showlegend=False)
-    return figure
+    return _apply_visual_theme(figure, theme_mode, showlegend=False)
 
 
 def feedback_top_titles_chart(
@@ -253,5 +252,4 @@ def feedback_top_titles_chart(
         title="Top Feedback Titles",
         color_discrete_sequence=PALETTE[:3],
     )
-    figure.update_layout(template=plotly_template(theme_mode))
-    return figure
+    return _apply_visual_theme(figure, theme_mode)

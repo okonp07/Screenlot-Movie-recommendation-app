@@ -2,7 +2,12 @@ from __future__ import annotations
 
 import unittest
 
-from screenlot.styles import build_global_css, normalize_theme_mode, plotly_template
+from screenlot.styles import (
+    build_global_css,
+    normalize_theme_mode,
+    plotly_layout,
+    plotly_template,
+)
 
 
 class ScreenLotStyleTests(unittest.TestCase):
@@ -13,6 +18,11 @@ class ScreenLotStyleTests(unittest.TestCase):
     def test_plotly_template_matches_theme(self) -> None:
         self.assertEqual(plotly_template("dark"), "plotly_dark")
         self.assertEqual(plotly_template("light"), "plotly_white")
+
+    def test_light_plotly_layout_uses_white_or_transparent_backgrounds(self) -> None:
+        layout = plotly_layout("light")
+        self.assertEqual(layout["paper_bgcolor"], "rgba(255, 255, 255, 0)")
+        self.assertEqual(layout["plot_bgcolor"], "#ffffff")
 
     def test_light_theme_css_contains_light_tokens(self) -> None:
         css = build_global_css("light")

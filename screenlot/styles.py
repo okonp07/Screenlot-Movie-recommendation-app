@@ -42,6 +42,10 @@ _THEME_TOKENS: dict[str, dict[str, Any]] = {
         "callout_end": "rgba(92, 79, 115, 0.08)",
         "card_shadow": "0 25px 70px rgba(0, 0, 0, 0.34)",
         "metric_shadow": "0 18px 40px rgba(0, 0, 0, 0.18)",
+        "chart_paper_bg": "rgba(0, 0, 0, 0)",
+        "chart_plot_bg": "rgba(17, 15, 24, 0.72)",
+        "chart_grid_color": "rgba(178, 166, 199, 0.16)",
+        "chart_legend_bg": "rgba(17, 15, 24, 0.45)",
     },
     "light": {
         "color_scheme": "light",
@@ -79,6 +83,10 @@ _THEME_TOKENS: dict[str, dict[str, Any]] = {
         "callout_end": "rgba(88, 72, 111, 0.06)",
         "card_shadow": "0 22px 48px rgba(80, 55, 110, 0.10)",
         "metric_shadow": "0 14px 30px rgba(80, 55, 110, 0.08)",
+        "chart_paper_bg": "rgba(255, 255, 255, 0)",
+        "chart_plot_bg": "#ffffff",
+        "chart_grid_color": "rgba(123, 108, 150, 0.12)",
+        "chart_legend_bg": "rgba(255, 255, 255, 0.85)",
     },
 }
 
@@ -92,6 +100,25 @@ def normalize_theme_mode(mode: str | None) -> str:
 
 def plotly_template(mode: str | None) -> str:
     return "plotly_white" if normalize_theme_mode(mode) == "light" else "plotly_dark"
+
+
+def plotly_layout(mode: str | None) -> dict[str, Any]:
+    tokens = _THEME_TOKENS[normalize_theme_mode(mode)]
+    return {
+        "template": plotly_template(mode),
+        "paper_bgcolor": tokens["chart_paper_bg"],
+        "plot_bgcolor": tokens["chart_plot_bg"],
+        "font": {"color": tokens["screenlot_ink"]},
+        "legend": {"bgcolor": tokens["chart_legend_bg"]},
+        "xaxis": {
+            "gridcolor": tokens["chart_grid_color"],
+            "zerolinecolor": tokens["chart_grid_color"],
+        },
+        "yaxis": {
+            "gridcolor": tokens["chart_grid_color"],
+            "zerolinecolor": tokens["chart_grid_color"],
+        },
+    }
 
 
 def build_global_css(mode: str | None = None) -> str:
