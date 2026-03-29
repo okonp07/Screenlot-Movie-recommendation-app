@@ -1,146 +1,145 @@
-# 2201ACDS_NM2 Unsupervised Learning  - Movie Predition
+# ScreenLot
 
-## Project Overview
+ScreenLot is the product layer for the original movie recommendation project in this repository. The notebooks, presentation materials, and archived model artifacts are still here, but the repo now also includes a Streamlit app foundation that turns the project into a reusable product.
 
-A recommendation system is a subclass of Information filtering Systems that seeks to predict the rating or the preference a user might give to an item. In simple words, it is a system that uses a machine learning algorithms that suggests relevant items to users. There are two main types of recommender systems – personalized and non-personalized. Non-personalized recommendation systems like popularity based recommenders recommend the most popular items to the users, for instance top-10 movies, top selling books, the most frequently purchased products etc.
+## What is in the repo now
 
-In today’s technology driven world, recommender systems are socially and economically critical to ensure that individuals can make optimised choices surrounding the content they engage with on a daily basis. This is made possible by personalized recommendation systems. One application where this is especially true is movie recommendations; where intelligent algorithms can help viewers find great titles from tens of thousands of options that is suited to their individual preference.
+- `app.py`: Streamlit entrypoint for ScreenLot.
+- `screenlot/`: reusable app, data, EDA, and recommendation modules.
+- `assets/`: extracted branding, contributor photos, and presentation-derived visuals.
+- `notebooks/`: companion notebooks that explain the EDA and modeling work.
+- `data/README.md`: instructions for staging the original project CSV files.
+- `Model pickles.zip`: archived collaborative filtering artifacts from the original work.
+- Original notebooks and presentation decks for reference.
 
-In this unsupervised learning challenge, our team is to develop a recommendation algorithm based on content or collaborative filtering, capable of accurately predicting how a user will rate a movie they have not yet viewed yet, based on their historical preferences. Providing an accurate and robust solution to this challenge has immense economic potential. Users of this system will be providede with personalised recommendations - generating platform affinity for the streaming services which best facilitates their audience's viewing.
+## ScreenLot product sections
 
-## Team Members and Supervisor
+- Home
+- Recommendation Engine
+- EDA
+- About
+- Report and Conclusion
+- Suggestions
 
-Below is the list of all the members of this team who are to participate in this project. At the time of generating this repository, they are all students at EXPLORE Data Science Academy.
+## Recommendation approach
 
-- Prince Okon
-- Adewale Daniel Odukoya
-- Huzaifa Abu 
-- Izunna Eneude
-- Jerry Iriri
+The current ScreenLot foundation uses a hybrid strategy:
 
-**Supervisor: Nomfundo Manyisa**
+- validation-tuned hybrid ranking from collaborative, metadata, and popularity signals
+- a live model-selection layer that keeps the best validation-winning serving engine
+- structured explanations for every recommendation
+- persisted user feedback capture for likes, saves, and dismissals
 
-## Project Aim
+This keeps the app useful in product form while still respecting the original modeling work from the notebooks.
 
-To build a Machine Learning model that uses the historical data of a movies viewed by an individual to predict the rating that they will assign to movies that they haven't seen yet.
+## UI and product experience
 
-## Data Details
+The current ScreenLot UI now includes:
 
-The dataset consists of several million 5-star ratings obtained from users of the online MovieLens movie recommendation service. The MovieLens dataset has long been used by industry and academic researchers to improve the performance of explicitly-based recommender systems. The data used for this project is a pre- enriched version of the MovieLens dataset which has been cleaned, and resampled for fair evaluation purposes.
+- a purple-ash and black brand system
+- a custom ScreenLot banner asset in `assets/branding/screenlot-banner.svg`
+- contributor imagery on the About page
+- live model snapshot cards and benchmark visualizations
+- quick-start profile buttons for recommendation prompts
+- explanation chips and deeper reasoning details on recommendations
+- persistent recommendation feedback stored locally outside the repo by default
 
-### Data Source
+## Open Data Pipeline
 
-The data for the MovieLens dataset is maintained by the GroupLens research group in the Department of Computer Science and Engineering at the University of Minnesota. Additional movie content data was legally scraped from IMDB.
+The repository now includes a reproducible open-data staging pipeline for the next version of ScreenLot:
 
-### Supplied Data Files
-genome_scores.csv - a score mapping the strength between movies and tag-related properties. Read more here
-genome_tags.csv - user assigned tags for genome-related scores
-imdb_data.csv - Additional movie metadata scraped from IMDB using the links.csv file.
-links.csv - File providing a mapping between a MovieLens ID and associated IMDB and TMDB IDs.
-sample_submission.csv - Sample of the submission format for the hackathon.
-tags.csv - User assigned for the movies within the dataset.
-test.csv - The test split of the dataset. Contains user and movie IDs with no rating data.
-train.csv - The training split of the dataset. Contains user and movie IDs with associated rating data.
+- `scripts/stage_movielens_32m.py`
+- `scripts/enrich_wikidata_movies.py`
+- `scripts/build_screenlot_catalog.py`
 
-### Ratings Data File Structure (train.csv)
+The pipeline stages:
 
-All ratings are contained in the file train.csv. Each line of this file after the header row represents one rating of one movie by one user, and has the following format:
+- raw MovieLens 32M ratings, movies, links, and tags
+- incremental Wikidata movie enrichment for explainability
+- processed ScreenLot-ready catalog and summary tables
 
-**userId,movieId,rating,timestamp**
-The lines within this file are ordered first by userId, then, within user, by movieId.
+Quick start:
 
-Ratings are made on a 5-star scale, with half-star increments (0.5 stars - 5.0 stars), giving 10 rating categories in all.
+1. `python3 scripts/stage_movielens_32m.py`
+2. `python3 scripts/enrich_wikidata_movies.py --limit 500`
+3. `python3 scripts/build_screenlot_catalog.py`
 
-Timestamps represent seconds since midnight Coordinated Universal Time (UTC) of January 1, 1970.
+## Modeling Pipeline
 
-### Tags Data File Structure (tags.csv)
-All tags are contained in the file tags.csv. Each line of this file after the header row represents one tag applied to one movie by one user, and has the following format:
+The repository now includes an offline benchmarking and artifact-generation script for ScreenLot:
 
-userId,movieId,tag,timestamp
-The lines within this file are ordered first by userId, then, within user, by movieId.
+- `python3 scripts/train_screenlot_models.py`
 
-Tags are user-generated metadata about movies. Each tag is typically a single word or short phrase. The meaning, value, and purpose of a particular tag is determined by each user.
+What it does:
 
-Timestamps represent seconds since midnight Coordinated Universal Time (UTC) of January 1, 1970
+- builds timestamp-based train, validation, and test splits
+- benchmarks popularity, item-item collaborative filtering, matrix factorization, and the ScreenLot hybrid model
+- reports ranking metrics such as `Recall@K`, `NDCG@K`, `MAP@K`, coverage, novelty, and diversity
+- saves a trained ScreenLot artifact for the app to load automatically when present
+- lets the saved artifact route recommendations through the best validation-winning ranker when it outperforms the explainable hybrid on top-line relevance
 
-### Movies Data File Structure (movies.csv)
-Movie information is contained in the file movies.csv. Each line of this file after the header row represents one movie, and has the following format:
+Default training is intentionally sample-sized for iteration speed. The `--max-rows` option now targets an approximate volume by randomly selecting complete user histories instead of taking the first rows in the CSV, which keeps the temporal evaluation much more trustworthy. Use `--max-rows 0` and a larger `--max-users` value when you want a more expensive full-dataset run.
 
-movieId,title,genres
-Movie titles are entered manually or imported from https://www.themoviedb.org/, and include the year of release in parentheses. Errors and inconsistencies may exist in these titles.
+## Run the app
 
-Genres are a pipe-separated list, and are selected from the following:
+1. Install the requirements:
 
--Action
--Adventure
--Animation
--Children's
--Comedy
--Crime
--Documentary
--Drama
--Fantasy
--Film-Noir
--Horror
--Musical
--Mystery
--Romance
--Sci-Fi
--Thriller
--War
--Western
--(no genres listed)
+   `pip install -r requirements.txt`
 
-### Links Data File Structure (links.csv)
-Identifiers that can be used to link to other sources of movie data are contained in the file links.csv. Each line of this file after the header row represents one movie, and has the following format:
+2. Add the original project CSV files to `movie_recommendation_data/` in the repo root.
 
-movieId,imdbId,tmdbId
-movieId is an identifier for movies used by https://movielens.org. E.g., the movie Toy Story has the link https://movielens.org/movies/1.
+3. Launch ScreenLot:
 
-imdbId is an identifier for movies used by http://www.imdb.com. E.g., the movie Toy Story has the link http://www.imdb.com/title/tt0114709/.
+   `streamlit run app.py`
 
-tmdbId is an identifier for movies used by https://www.themoviedb.org. E.g., the movie Toy Story has the link https://www.themoviedb.org/movie/862.
+## Companion notebooks
 
-Use of the resources listed above is subject to the terms of each provider.
+Two notebooks have been added to explain the current productized version of the project:
 
-### Tag Genome (genome-scores.csv and genome-tags.csv)
-As described in this article, the tag genome encodes how strongly movies exhibit particular properties represented by tags (atmospheric, thought-provoking, realistic, etc.). The tag genome was computed using a machine learning algorithm on user-contributed content including tags, ratings, and textual reviews.
+- `notebooks/ScreenLot_Modeling_Workbook.ipynb`
+- `notebooks/ScreenLot_EDA_Workbook.ipynb`
 
-The genome is split into two files. The file genome-scores.csv contains movie-tag relevance data in the following format:
+These notebooks explain the modern modeling pipeline, benchmark results, open-data staging flow, and the EDA views that feed the Streamlit app.
 
-movieId,tagId,relevance
-The second file, genome-tags.csv, provides the tag descriptions for the tag IDs in the genome file, in the following format:
+## Runtime and deployment
 
-tagId,tag
+ScreenLot now supports environment-driven paths so the same app can run locally or in a hosted deployment with mounted data and writable state:
 
-### Jupyter Note book File (Project Base file)
+- `SCREENLOT_DATA_DIR`: location of the ratings and movies CSV files
+- `SCREENLOT_STATE_DIR`: writable directory for app state such as user feedback
+- `SCREENLOT_FEEDBACK_LOG`: optional explicit path for the feedback log file
+- `SCREENLOT_MODEL_ARTIFACT`: optional explicit path to the trained recommendation artifact
+- `SCREENLOT_MODEL_CARD`: optional explicit path to the saved model-card JSON
 
-The jupyter notebook in this repository is a detailed documentation of the technical steps taken to complete the defined task in this project. The notebook in this repository is the Base jupyter notebook, on which we shall rely to generate and update submissions of our models performance on Kaggle.
+Example:
 
-This file will be worked on and improved upon by all team members with the aim of reaching the goals and accomplishing the tasks set out as the goals of the project outlined. By Taking into account the contributions of all team members, we shall hopefully generate a final model which will perform best at recomending movies for individual viewers based on their past preferences.
+```bash
+export SCREENLOT_DATA_DIR=/mount/data/ml-32m
+export SCREENLOT_STATE_DIR=/mount/state/screenlot
+streamlit run app.py
+```
 
-### How to work on the base file as a Collaborator
+User feedback from the recommendation page is persisted as JSON Lines so likes, saves, and dismissals survive app restarts.
 
-All teammates have been added as collaborators in the project on Kaggle. Due to the sheer size of the data to be processed it is highly reccommended that all the work on this project be done mainly on the kaggle kernel platform. This is because most personal computers will lack the computational resources required to carry out the processing of this data in a timely and efficient manner.
+## Data expectations
 
-### Dependencies
+Minimum files for the first working experience:
 
-Note that the dependencies required for the notebook to run must be installed in personal machines before the jupyter file runs as it should. Note that some of theses dependencies may not install with a simple pip command as you might expect and may have to be installed via anaconda prompt or other command line interfaces. You may use google, stack overflow and other online resources to install and update the dependencies whenever you need to. These dependencies usually are requisite for the execution of the jupyter notebook.
+- `movie_recommendation_data/train.csv`
+- `movie_recommendation_data/movies.csv`
 
-### Resources
+Recommended for a stronger recommendation engine and richer EDA:
 
-It will be beneficial to rely on the materials provided by Explore Data Science Academy on their learning platform, but it is also recommended that collaborators conduct personal research to supplement the information provided on Athena. Please make use of these resources and keep this readme file updated with relevant links to materials that may be useful to our work.
+- `movie_recommendation_data/imdb_data.csv`
+- `movie_recommendation_data/links.csv`
+- `movie_recommendation_data/test.csv`
+- `movie_recommendation_data/genome_scores.csv`
+- `movie_recommendation_data/genome_tags.csv`
 
-### Others
+## Notes
 
-Refer to our teams Trello board for details on tasks assigned to specific teammates, progress reports and other updates.
-
-- [Trello Board](https://trello.com/b/Lq21ugZq/teamnm2-movie-rating-prediction)
-
-Refer to the kaggle leader board to access details on the teams performance on the ongoing Kaggle challenge
-
-- [Kaggle Challenge](https://www.kaggle.com/competitions/edsa-movie-recommendation-2022/overview))
-
-Refer to the presentation slides, by clicking on
-
-- [Presentation Slides](https://docs.google.com/presentation/d/1oje2X49-cpqEB-631jv8q_7wyJrGES3cDbGoR1G2MAs/edit)
+- The app now uses the ScreenLot branding and contributor assets extracted from the project presentation deck.
+- The current UI theme is based on purple ash and black to give the product a more cinematic streaming feel.
+- The original repo snapshot included notebooks only; this pass begins the conversion into a maintainable application.
+- The archived collaborative models remain optional at runtime because some environments may not have the dependencies needed to unpickle them.
+- The open-data pipeline is designed so we can move off the older Kaggle-era snapshot and build the next model version on MovieLens 32M plus Wikidata.

@@ -1,0 +1,28 @@
+from pathlib import Path
+import unittest
+
+from screenlot.content import CONTRIBUTORS, SCREENLOT_BANNER, SCREENLOT_LOGO, STREAMLIT_CONCEPT
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+
+class ScreenLotContentTests(unittest.TestCase):
+    def test_brand_assets_exist(self) -> None:
+        self.assertTrue(SCREENLOT_LOGO.exists())
+        self.assertTrue(SCREENLOT_BANNER.exists())
+        self.assertTrue(STREAMLIT_CONCEPT.exists())
+
+    def test_contributors_have_images(self) -> None:
+        self.assertGreaterEqual(len(CONTRIBUTORS), 5)
+        for contributor in CONTRIBUTORS:
+            self.assertIsInstance(contributor.image_path, Path)
+            self.assertTrue(contributor.image_path.exists(), contributor.name)
+
+    def test_companion_notebooks_exist(self) -> None:
+        self.assertTrue((PROJECT_ROOT / "notebooks" / "ScreenLot_Modeling_Workbook.ipynb").exists())
+        self.assertTrue((PROJECT_ROOT / "notebooks" / "ScreenLot_EDA_Workbook.ipynb").exists())
+
+
+if __name__ == "__main__":
+    unittest.main()

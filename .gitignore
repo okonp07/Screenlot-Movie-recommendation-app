@@ -1,0 +1,13 @@
+.DS_Store
+__pycache__/
+.pytest_cache/
+.tmp_presentation_media/
+.streamlit/secrets.toml
+movie_recommendation_data/
+.screenlot/
+data/raw/
+data/interim/
+data/processed/
+*.pyc
+*.pyo
+*.pyd

@@ -1,0 +1,152 @@
+{
+  "artifact_path": "/Users/researchanddevelopment2/Documents/Zindi/Unsupervised-Learning-Repository/artifacts/screenlot/hybrid_recommender.joblib",
+  "training_config": {
+    "max_rows": 750000,
+    "max_users": 6000,
+    "min_user_interactions": 5,
+    "min_item_interactions": 20,
+    "max_eval_users": 500,
+    "item_knn_neighbors": 120,
+    "mf_components": 64,
+    "positive_threshold": 3.5,
+    "elapsed_seconds": 1643.47
+  },
+  "selected_model_name": "hybrid",
+  "validation_benchmarks": [
+    {
+      "model": "popularity",
+      "recall@10": 0.04085035431429762,
+      "ndcg@10": 0.020045166806066887,
+      "map@10": 0.013816189946869397,
+      "recall@20": 0.06919549812421842,
+      "ndcg@20": 0.02713267795890454,
+      "map@20": 0.01571956507794712,
+      "coverage": 0.04151961801951422,
+      "novelty": 8.953988432672997,
+      "diversity": 0.8160453798956582,
+      "evaluated_users": 4798
+    },
+    {
+      "model": "item_knn",
+      "recall@10": 0.09191329720716965,
+      "ndcg@10": 0.04942453173426746,
+      "map@10": 0.036560703203054185,
+      "recall@20": 0.13922467694872864,
+      "ndcg@20": 0.0613129563905135,
+      "map@20": 0.03978600791199759,
+      "coverage": 0.462736142827486,
+      "novelty": 9.668083326096244,
+      "diversity": 0.7954967177860506,
+      "evaluated_users": 4798
+    },
+    {
+      "model": "matrix_factorization",
+      "recall@10": 0.09545644018340975,
+      "ndcg@10": 0.0503233477696559,
+      "map@10": 0.03664713141057451,
+      "recall@20": 0.14985410587744893,
+      "ndcg@20": 0.06404654183451855,
+      "map@20": 0.040394786559605295,
+      "coverage": 0.25949761262196386,
+      "novelty": 9.983228235111909,
+      "diversity": 0.8008824891981712,
+      "evaluated_users": 4798
+    },
+    {
+      "model": "hybrid",
+      "recall@10": 0.11004585243851604,
+      "ndcg@10": 0.0600080778633169,
+      "map@10": 0.044865833647617724,
+      "recall@20": 0.1744476865360567,
+      "ndcg@20": 0.07615661355332544,
+      "map@20": 0.04922854270357164,
+      "coverage": 0.36599543284201785,
+      "novelty": 9.877023926464725,
+      "diversity": 0.7536938119126083,
+      "evaluated_users": 4798
+    }
+  ],
+  "test_benchmarks": [
+    {
+      "model": "popularity",
+      "recall@10": 0.042,
+      "ndcg@10": 0.02001541166475774,
+      "map@10": 0.013284126984126983,
+      "recall@20": 0.064,
+      "ndcg@20": 0.025530421953147895,
+      "map@20": 0.014771879874511453,
+      "coverage": 0.025949761262196388,
+      "novelty": 8.97653581631941,
+      "diversity": 0.8173541586941345,
+      "evaluated_users": 500
+    },
+    {
+      "model": "item_knn",
+      "recall@10": 0.066,
+      "ndcg@10": 0.03732757395904477,
+      "map@10": 0.028602380952380956,
+      "recall@20": 0.122,
+      "ndcg@20": 0.05145375213202307,
+      "map@20": 0.0324574798524489,
+      "coverage": 0.19140543906996055,
+      "novelty": 9.698439916779346,
+      "diversity": 0.7968047438227998,
+      "evaluated_users": 500
+    },
+    {
+      "model": "matrix_factorization",
+      "recall@10": 0.082,
+      "ndcg@10": 0.04282733058498509,
+      "map@10": 0.031007142857142855,
+      "recall@20": 0.126,
+      "ndcg@20": 0.05396914299825607,
+      "map@20": 0.0340797227626175,
+      "coverage": 0.17770396512352085,
+      "novelty": 10.009399731584162,
+      "diversity": 0.8038119792422099,
+      "evaluated_users": 500
+    },
+    {
+      "model": "hybrid",
+      "recall@10": 0.092,
+      "ndcg@10": 0.046396380722416634,
+      "map@10": 0.032551587301587304,
+      "recall@20": 0.148,
+      "ndcg@20": 0.06076542253795302,
+      "map@20": 0.0366052001490082,
+      "coverage": 0.19078264479966783,
+      "novelty": 9.902918130338069,
+      "diversity": 0.759702649542246,
+      "evaluated_users": 500
+    },
+    {
+      "model": "screenlot_serving",
+      "recall@10": 0.092,
+      "ndcg@10": 0.046396380722416634,
+      "map@10": 0.032551587301587304,
+      "recall@20": 0.148,
+      "ndcg@20": 0.06076542253795302,
+      "map@20": 0.0366052001490082,
+      "coverage": 0.19078264479966783,
+      "novelty": 9.902918130338069,
+      "diversity": 0.759702649542246,
+      "evaluated_users": 500
+    }
+  ],
+  "hybrid_details": {
+    "score_strategy": "blend",
+    "blend_weights": {
+      "item_knn_score": 0.2,
+      "mf_score": 0.3,
+      "content_score": 0.2,
+      "popularity_score": 0.05,
+      "mean_rating_norm": 0.03,
+      "rating_count_norm": 0.03,
+      "freshness_score": 0.02,
+      "genre_overlap": 0.1,
+      "director_overlap": 0.04,
+      "series_overlap": 0.03
+    },
+    "model_label": "ScreenLot hybrid reranker (validation-tuned blend)"
+  }
+}
