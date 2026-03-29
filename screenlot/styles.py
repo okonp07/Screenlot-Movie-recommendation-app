@@ -53,6 +53,7 @@ _THEME_TOKENS: dict[str, dict[str, Any]] = {
         "table_row_alt_bg": "rgba(13, 10, 19, 0.66)",
         "table_text": "#f5efff",
         "table_border": "rgba(178, 166, 199, 0.18)",
+        "wordmark_filter": "none",
     },
     "light": {
         "color_scheme": "light",
@@ -101,6 +102,7 @@ _THEME_TOKENS: dict[str, dict[str, Any]] = {
         "table_row_alt_bg": "rgba(255, 255, 255, 0)",
         "table_text": "#000000",
         "table_border": "rgba(123, 108, 150, 0.16)",
+        "wordmark_filter": "brightness(0) saturate(100%) opacity(0.92)",
     },
 }
 
@@ -190,6 +192,7 @@ def build_global_css(mode: str | None = None) -> str:
     --screenlot-table-row-alt-bg: __table_row_alt_bg__;
     --screenlot-table-text: __table_text__;
     --screenlot-table-border: __table_border__;
+    --screenlot-wordmark-filter: __wordmark_filter__;
 }
 
 html, body, [class*="st-"], [data-testid="stMarkdownContainer"] {
@@ -432,6 +435,13 @@ h1, h2, h3, h4, .hero-title, .banner-title {
 
 .screenlot-table tbody tr:last-child td {
     border-bottom: none;
+}
+
+.screenlot-wordmark-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: var(--screenlot-wordmark-filter);
 }
 
 .contributor-card {

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import html
 from pathlib import Path
 from typing import Any
@@ -58,6 +59,20 @@ THEME_TOGGLE_KEY = "screenlot_light_mode"
 
 def _safe_image(path: Path) -> str | None:
     return str(path) if path.exists() else None
+
+
+def _inline_image_markup(path: Path, class_name: str = "") -> str:
+    suffix = path.suffix.lower()
+    mime_type = {
+        ".png": "image/png",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".svg": "image/svg+xml",
+        ".webp": "image/webp",
+    }.get(suffix, "application/octet-stream")
+    encoded = base64.b64encode(path.read_bytes()).decode("ascii")
+    classes = f" class='{class_name}'" if class_name else ""
+    return f"<img{classes} src='data:{mime_type};base64,{encoded}' alt='{html.escape(path.stem)}' />"
 
 
 def _render_banner_image() -> None:
@@ -809,9 +824,11 @@ def _render_about() -> None:
         )
 
     with intro_right:
-        dataport_path = _safe_image(DATAPORT_WORDMARK)
-        if dataport_path:
-            st.image(dataport_path, use_container_width=True)
+        if DATAPORT_WORDMARK.exists():
+            st.markdown(
+                _inline_image_markup(DATAPORT_WORDMARK, class_name="screenlot-wordmark-image"),
+                unsafe_allow_html=True,
+            )
         st.caption(f"Product concept and presentation material reference {ORGANIZATION}.")
 
     st.markdown("### Contributors")
