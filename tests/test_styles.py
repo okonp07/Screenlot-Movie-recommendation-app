@@ -31,6 +31,8 @@ class ScreenLotStyleTests(unittest.TestCase):
         self.assertIn("color-scheme: light", css)
         self.assertIn("--screenlot-app-bg-start: #fcfaff;", css)
         self.assertIn("--screenlot-button-text: #221b2c;", css)
+        self.assertIn("--screenlot-table-text: #000000;", css)
+        self.assertIn("--screenlot-table-row-bg: rgba(255, 255, 255, 0);", css)
 
 
 if __name__ == "__main__":

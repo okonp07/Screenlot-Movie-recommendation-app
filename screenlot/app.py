@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 from pathlib import Path
 from typing import Any
 import zipfile
@@ -153,6 +154,29 @@ def _leaderboard_table_rows(rows: list[dict[str, Any]]) -> list[dict[str, str]]:
             }
         )
     return table_rows
+
+
+def _benchmark_table_markup(rows: list[dict[str, str]]) -> str:
+    if not rows:
+        return ""
+    columns = list(rows[0].keys())
+    header = "".join(f"<th>{html.escape(column)}</th>" for column in columns)
+    body_rows: list[str] = []
+    for row in rows:
+        cells = "".join(
+            f"<td>{html.escape(str(row.get(column, '')))}</td>"
+            for column in columns
+        )
+        body_rows.append(f"<tr>{cells}</tr>")
+    body = "".join(body_rows)
+    return (
+        "<div class='screenlot-table-shell'>"
+        "<table class='screenlot-table'>"
+        f"<thead><tr>{header}</tr></thead>"
+        f"<tbody>{body}</tbody>"
+        "</table>"
+        "</div>"
+    )
 
 
 def _feedback_labels(action: str) -> str:
@@ -334,16 +358,18 @@ def _render_benchmark_table(model_card: dict[str, Any] | None) -> None:
 
     validation_tab, test_tab = st.tabs(["Validation Leaderboard", "Test Leaderboard"])
     with validation_tab:
-        st.dataframe(
-            _leaderboard_table_rows(leaderboard_rows(model_card, split="validation")),
-            use_container_width=True,
-            hide_index=True,
+        st.markdown(
+            _benchmark_table_markup(
+                _leaderboard_table_rows(leaderboard_rows(model_card, split="validation"))
+            ),
+            unsafe_allow_html=True,
         )
     with test_tab:
-        st.dataframe(
-            _leaderboard_table_rows(leaderboard_rows(model_card, split="test")),
-            use_container_width=True,
-            hide_index=True,
+        st.markdown(
+            _benchmark_table_markup(
+                _leaderboard_table_rows(leaderboard_rows(model_card, split="test"))
+            ),
+            unsafe_allow_html=True,
         )
 
 

@@ -47,6 +47,12 @@ _THEME_TOKENS: dict[str, dict[str, Any]] = {
         "chart_grid_color": "rgba(178, 166, 199, 0.16)",
         "chart_legend_bg": "rgba(17, 15, 24, 0.45)",
         "chart_font_color": "#f5efff",
+        "table_shell_bg": "rgba(10, 8, 14, 0.48)",
+        "table_header_bg": "rgba(17, 15, 24, 0.86)",
+        "table_row_bg": "rgba(8, 6, 12, 0.74)",
+        "table_row_alt_bg": "rgba(13, 10, 19, 0.66)",
+        "table_text": "#f5efff",
+        "table_border": "rgba(178, 166, 199, 0.18)",
     },
     "light": {
         "color_scheme": "light",
@@ -89,6 +95,12 @@ _THEME_TOKENS: dict[str, dict[str, Any]] = {
         "chart_grid_color": "rgba(123, 108, 150, 0.12)",
         "chart_legend_bg": "rgba(255, 255, 255, 0)",
         "chart_font_color": "#000000",
+        "table_shell_bg": "rgba(255, 255, 255, 0)",
+        "table_header_bg": "rgba(255, 255, 255, 0)",
+        "table_row_bg": "rgba(255, 255, 255, 0)",
+        "table_row_alt_bg": "rgba(255, 255, 255, 0)",
+        "table_text": "#000000",
+        "table_border": "rgba(123, 108, 150, 0.16)",
     },
 }
 
@@ -172,6 +184,12 @@ def build_global_css(mode: str | None = None) -> str:
     --screenlot-callout-end: __callout_end__;
     --screenlot-card-shadow: __card_shadow__;
     --screenlot-metric-shadow: __metric_shadow__;
+    --screenlot-table-shell-bg: __table_shell_bg__;
+    --screenlot-table-header-bg: __table_header_bg__;
+    --screenlot-table-row-bg: __table_row_bg__;
+    --screenlot-table-row-alt-bg: __table_row_alt_bg__;
+    --screenlot-table-text: __table_text__;
+    --screenlot-table-border: __table_border__;
 }
 
 html, body, [class*="st-"], [data-testid="stMarkdownContainer"] {
@@ -369,6 +387,51 @@ h1, h2, h3, h4, .hero-title, .banner-title {
     font-size: 1.65rem;
     font-weight: 800;
     margin-top: 0.15rem;
+}
+
+.screenlot-table-shell {
+    overflow-x: auto;
+    background: var(--screenlot-table-shell-bg);
+    border: 1px solid var(--screenlot-table-border);
+    border-radius: 22px;
+}
+
+.screenlot-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: transparent;
+    color: var(--screenlot-table-text);
+}
+
+.screenlot-table thead tr {
+    background: var(--screenlot-table-header-bg);
+}
+
+.screenlot-table tbody tr {
+    background: var(--screenlot-table-row-bg);
+}
+
+.screenlot-table tbody tr:nth-child(even) {
+    background: var(--screenlot-table-row-alt-bg);
+}
+
+.screenlot-table th,
+.screenlot-table td {
+    padding: 1rem 0.95rem;
+    text-align: left;
+    color: var(--screenlot-table-text);
+    border-right: 1px solid var(--screenlot-table-border);
+    border-bottom: 1px solid var(--screenlot-table-border);
+    white-space: nowrap;
+}
+
+.screenlot-table th:last-child,
+.screenlot-table td:last-child {
+    border-right: none;
+}
+
+.screenlot-table tbody tr:last-child td {
+    border-bottom: none;
 }
 
 .contributor-card {
