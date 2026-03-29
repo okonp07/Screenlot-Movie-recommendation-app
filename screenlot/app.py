@@ -431,9 +431,6 @@ def _render_home(
     hero_left, hero_right = st.columns((1.15, 0.85), gap="large")
 
     with hero_left:
-        logo_path = _safe_image(SCREENLOT_LOGO)
-        if logo_path:
-            st.image(logo_path, width=88)
         st.markdown(
             (
                 "<div class='hero-shell'>"
