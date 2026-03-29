@@ -39,7 +39,7 @@ The current ScreenLot UI now includes:
 
 - a purple-ash and black brand system
 - a light/dark appearance toggle with a bright white-background variation
-- a custom ScreenLot banner asset in `assets/branding/screenlot-banner.svg`
+- theme-specific ScreenLot banners in `assets/branding/screenlot-banner-dark.png` and `assets/branding/screenlot-banner-light.png`
 - contributor imagery on the About page
 - live model snapshot cards and benchmark visualizations
 - quick-start profile buttons for recommendation prompts

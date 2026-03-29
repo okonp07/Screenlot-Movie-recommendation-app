@@ -24,6 +24,8 @@ from .content import (
     ORGANIZATION,
     REPORT_SUMMARY,
     SCREENLOT_BANNER,
+    SCREENLOT_BANNER_DARK,
+    SCREENLOT_BANNER_LIGHT,
     SCREENLOT_LOGO,
     STREAMLIT_CONCEPT,
     SUGGESTION_ITEMS,
@@ -75,8 +77,11 @@ def _inline_image_markup(path: Path, class_name: str = "") -> str:
     return f"<img{classes} src='data:{mime_type};base64,{encoded}' alt='{html.escape(path.stem)}' />"
 
 
-def _render_banner_image() -> None:
-    banner_path = _safe_image(SCREENLOT_BANNER)
+def _render_banner_image(theme_mode: str) -> None:
+    banner_asset = SCREENLOT_BANNER_LIGHT if theme_mode == "light" else SCREENLOT_BANNER_DARK
+    banner_path = _safe_image(banner_asset)
+    if banner_path is None:
+        banner_path = _safe_image(SCREENLOT_BANNER)
     if banner_path:
         st.image(banner_path, use_container_width=True)
 
@@ -465,8 +470,9 @@ def _render_home(
     collaborative_status: str,
     snapshot: dict[str, Any] | None,
     feedback_snapshot: dict[str, Any],
+    theme_mode: str,
 ) -> None:
-    _render_banner_image()
+    _render_banner_image(theme_mode)
 
     hero_left, hero_right = st.columns((1.15, 0.85), gap="large")
 
@@ -805,9 +811,9 @@ def _render_eda(
                     st.plotly_chart(title_chart, use_container_width=True)
 
 
-def _render_about() -> None:
+def _render_about(theme_mode: str) -> None:
     st.markdown("## About ScreenLot")
-    _render_banner_image()
+    _render_banner_image(theme_mode)
 
     intro_left, intro_right = st.columns((1.2, 0.8), gap="large")
     with intro_left:
@@ -1024,7 +1030,7 @@ def main() -> None:
             st.warning(f"ScreenLot found the dataset folder but could not finish setup: {exc}")
 
     if page == "Home":
-        _render_home(metrics, collaborative_status, snapshot, feedback_snapshot)
+        _render_home(metrics, collaborative_status, snapshot, feedback_snapshot, theme_mode)
     elif page == "Recommendation Engine":
         _render_recommendations(
             catalog,
@@ -1038,7 +1044,7 @@ def main() -> None:
     elif page == "EDA":
         _render_eda(bundle, catalog, saved_model_card, feedback_frame, theme_mode)
     elif page == "About":
-        _render_about()
+        _render_about(theme_mode)
     elif page == "Report and Conclusion":
         _render_report(
             bundle,

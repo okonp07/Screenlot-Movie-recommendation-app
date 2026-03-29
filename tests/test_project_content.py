@@ -1,7 +1,14 @@
 from pathlib import Path
 import unittest
 
-from screenlot.content import CONTRIBUTORS, SCREENLOT_BANNER, SCREENLOT_LOGO, STREAMLIT_CONCEPT
+from screenlot.content import (
+    CONTRIBUTORS,
+    SCREENLOT_BANNER,
+    SCREENLOT_BANNER_DARK,
+    SCREENLOT_BANNER_LIGHT,
+    SCREENLOT_LOGO,
+    STREAMLIT_CONCEPT,
+)
 from screenlot.runtime import PACKAGED_DATA_DIR
 
 
@@ -12,6 +19,8 @@ class ScreenLotContentTests(unittest.TestCase):
     def test_brand_assets_exist(self) -> None:
         self.assertTrue(SCREENLOT_LOGO.exists())
         self.assertTrue(SCREENLOT_BANNER.exists())
+        self.assertTrue(SCREENLOT_BANNER_DARK.exists())
+        self.assertTrue(SCREENLOT_BANNER_LIGHT.exists())
         self.assertTrue(STREAMLIT_CONCEPT.exists())
 
     def test_contributors_have_images(self) -> None:

@@ -14,7 +14,9 @@ PREVIEWS_DIR = ASSETS_DIR / "previews"
 MODEL_ARCHIVE = PROJECT_ROOT / "Model pickles.zip"
 
 SCREENLOT_LOGO = BRANDING_DIR / "screenlot-logo.png"
-SCREENLOT_BANNER = BRANDING_DIR / "screenlot-banner.svg"
+SCREENLOT_BANNER_DARK = BRANDING_DIR / "screenlot-banner-dark.png"
+SCREENLOT_BANNER_LIGHT = BRANDING_DIR / "screenlot-banner-light.png"
+SCREENLOT_BANNER = SCREENLOT_BANNER_DARK
 DATAPORT_WORDMARK = BRANDING_DIR / "dataport-wordmark.png"
 STREAMLIT_CONCEPT = PREVIEWS_DIR / "streamlit-concept.png"
 
