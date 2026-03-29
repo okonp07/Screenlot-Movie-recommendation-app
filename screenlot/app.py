@@ -915,6 +915,19 @@ def main() -> None:
     data_dir = DEFAULT_DATA_DIR
     readiness = dataset_status(data_dir)
     missing = missing_required_files(data_dir)
+    data_notice = ""
+
+    if missing and data_dir != PACKAGED_DATA_DIR and not missing_required_files(PACKAGED_DATA_DIR):
+        original_data_dir = data_dir
+        data_dir = PACKAGED_DATA_DIR
+        readiness = dataset_status(data_dir)
+        missing = missing_required_files(data_dir)
+        data_notice = (
+            "Configured data path "
+            f"`{original_data_dir}` is missing required files, so ScreenLot fell back to "
+            "the packaged demo dataset."
+        )
+
     saved_model_card = _load_saved_model_card()
     snapshot = model_snapshot(saved_model_card)
     feedback_frame = load_feedback_frame()
@@ -925,6 +938,9 @@ def main() -> None:
         snapshot=snapshot,
         feedback_snapshot=feedback_snapshot,
     )
+
+    if data_notice:
+        st.info(data_notice)
 
     bundle = None
     catalog = None

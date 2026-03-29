@@ -14,10 +14,18 @@ def _resolve_path(env_name: str, default: Path) -> Path:
     return Path(raw_value).expanduser() if raw_value else default
 
 
-DEFAULT_DATA_DIR = _resolve_path(
-    "SCREENLOT_DATA_DIR",
-    PACKAGED_DATA_DIR if PACKAGED_DATA_DIR.exists() else FULL_DATA_DIR,
-)
+def resolve_default_data_dir() -> Path:
+    raw_value = os.getenv("SCREENLOT_DATA_DIR", "").strip()
+    if raw_value:
+        candidate = Path(raw_value).expanduser()
+        if candidate.exists():
+            return candidate
+    if PACKAGED_DATA_DIR.exists():
+        return PACKAGED_DATA_DIR
+    return FULL_DATA_DIR
+
+
+DEFAULT_DATA_DIR = resolve_default_data_dir()
 ARTIFACTS_DIR = _resolve_path(
     "SCREENLOT_ARTIFACT_DIR",
     PROJECT_ROOT / "artifacts" / "screenlot",
