@@ -1,18 +1,140 @@
-GLOBAL_CSS = """
+from __future__ import annotations
+
+from typing import Any
+
+
+DEFAULT_THEME_MODE = "dark"
+
+_THEME_TOKENS: dict[str, dict[str, Any]] = {
+    "dark": {
+        "color_scheme": "dark",
+        "screenlot_ink": "#f5efff",
+        "screenlot_muted": "#b9afc9",
+        "screenlot_purple_ash": "#8f82a8",
+        "screenlot_purple_soft": "#b2a6c7",
+        "screenlot_purple_deep": "#5c4f73",
+        "app_glow_primary": "rgba(143, 130, 168, 0.25)",
+        "app_glow_secondary": "rgba(178, 166, 199, 0.13)",
+        "app_bg_start": "#050409",
+        "app_bg_mid": "#09070f",
+        "app_bg_end": "#0d0914",
+        "sidebar_start": "rgba(11, 9, 17, 0.98)",
+        "sidebar_end": "rgba(15, 12, 24, 0.96)",
+        "panel": "rgba(15, 12, 24, 0.86)",
+        "panel_strong": "rgba(8, 6, 12, 0.95)",
+        "edge": "rgba(178, 166, 199, 0.22)",
+        "glow": "rgba(143, 130, 168, 0.18)",
+        "surface_soft": "rgba(255, 255, 255, 0.035)",
+        "surface_strong": "rgba(255, 255, 255, 0.015)",
+        "surface_border": "rgba(255, 255, 255, 0.07)",
+        "button_start": "rgba(143, 130, 168, 0.26)",
+        "button_end": "rgba(92, 79, 115, 0.28)",
+        "button_hover_start": "rgba(160, 148, 186, 0.32)",
+        "button_hover_end": "rgba(109, 96, 133, 0.34)",
+        "button_text": "#f5efff",
+        "input_bg": "rgba(255, 255, 255, 0.03)",
+        "input_border": "rgba(178, 166, 199, 0.16)",
+        "tab_bg": "rgba(255, 255, 255, 0.03)",
+        "tab_border": "rgba(178, 166, 199, 0.12)",
+        "tab_active_bg": "rgba(143, 130, 168, 0.18)",
+        "tab_active_border": "rgba(178, 166, 199, 0.32)",
+        "callout_start": "rgba(143, 130, 168, 0.14)",
+        "callout_end": "rgba(92, 79, 115, 0.08)",
+        "card_shadow": "0 25px 70px rgba(0, 0, 0, 0.34)",
+        "metric_shadow": "0 18px 40px rgba(0, 0, 0, 0.18)",
+    },
+    "light": {
+        "color_scheme": "light",
+        "screenlot_ink": "#221b2c",
+        "screenlot_muted": "#6f677c",
+        "screenlot_purple_ash": "#7b6c96",
+        "screenlot_purple_soft": "#9687b1",
+        "screenlot_purple_deep": "#58486f",
+        "app_glow_primary": "rgba(150, 135, 177, 0.20)",
+        "app_glow_secondary": "rgba(123, 108, 150, 0.14)",
+        "app_bg_start": "#fcfaff",
+        "app_bg_mid": "#f6f1fb",
+        "app_bg_end": "#efe7f7",
+        "sidebar_start": "rgba(255, 255, 255, 0.96)",
+        "sidebar_end": "rgba(246, 240, 252, 0.98)",
+        "panel": "rgba(255, 255, 255, 0.88)",
+        "panel_strong": "rgba(248, 243, 252, 0.98)",
+        "edge": "rgba(123, 108, 150, 0.18)",
+        "glow": "rgba(150, 135, 177, 0.18)",
+        "surface_soft": "rgba(255, 255, 255, 0.82)",
+        "surface_strong": "rgba(248, 243, 252, 0.92)",
+        "surface_border": "rgba(123, 108, 150, 0.12)",
+        "button_start": "rgba(150, 135, 177, 0.22)",
+        "button_end": "rgba(88, 72, 111, 0.16)",
+        "button_hover_start": "rgba(150, 135, 177, 0.30)",
+        "button_hover_end": "rgba(88, 72, 111, 0.22)",
+        "button_text": "#221b2c",
+        "input_bg": "rgba(255, 255, 255, 0.92)",
+        "input_border": "rgba(123, 108, 150, 0.15)",
+        "tab_bg": "rgba(255, 255, 255, 0.72)",
+        "tab_border": "rgba(123, 108, 150, 0.10)",
+        "tab_active_bg": "rgba(150, 135, 177, 0.16)",
+        "tab_active_border": "rgba(123, 108, 150, 0.26)",
+        "callout_start": "rgba(150, 135, 177, 0.12)",
+        "callout_end": "rgba(88, 72, 111, 0.06)",
+        "card_shadow": "0 22px 48px rgba(80, 55, 110, 0.10)",
+        "metric_shadow": "0 14px 30px rgba(80, 55, 110, 0.08)",
+    },
+}
+
+
+def normalize_theme_mode(mode: str | None) -> str:
+    normalized = (mode or DEFAULT_THEME_MODE).strip().lower()
+    if normalized not in _THEME_TOKENS:
+        return DEFAULT_THEME_MODE
+    return normalized
+
+
+def plotly_template(mode: str | None) -> str:
+    return "plotly_white" if normalize_theme_mode(mode) == "light" else "plotly_dark"
+
+
+def build_global_css(mode: str | None = None) -> str:
+    tokens = _THEME_TOKENS[normalize_theme_mode(mode)]
+    css = """
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
-    --screenlot-ink: #f5efff;
-    --screenlot-muted: #b9afc9;
-    --screenlot-purple-ash: #8f82a8;
-    --screenlot-purple-soft: #b2a6c7;
-    --screenlot-purple-deep: #5c4f73;
-    --screenlot-black: #07060c;
-    --screenlot-black-soft: #110f18;
-    --screenlot-panel: rgba(15, 12, 24, 0.86);
-    --screenlot-panel-strong: rgba(8, 6, 12, 0.95);
-    --screenlot-edge: rgba(178, 166, 199, 0.22);
-    --screenlot-glow: rgba(143, 130, 168, 0.18);
+    color-scheme: __color_scheme__;
+    --screenlot-ink: __screenlot_ink__;
+    --screenlot-muted: __screenlot_muted__;
+    --screenlot-purple-ash: __screenlot_purple_ash__;
+    --screenlot-purple-soft: __screenlot_purple_soft__;
+    --screenlot-purple-deep: __screenlot_purple_deep__;
+    --screenlot-app-glow-primary: __app_glow_primary__;
+    --screenlot-app-glow-secondary: __app_glow_secondary__;
+    --screenlot-app-bg-start: __app_bg_start__;
+    --screenlot-app-bg-mid: __app_bg_mid__;
+    --screenlot-app-bg-end: __app_bg_end__;
+    --screenlot-sidebar-start: __sidebar_start__;
+    --screenlot-sidebar-end: __sidebar_end__;
+    --screenlot-panel: __panel__;
+    --screenlot-panel-strong: __panel_strong__;
+    --screenlot-edge: __edge__;
+    --screenlot-glow: __glow__;
+    --screenlot-surface-soft: __surface_soft__;
+    --screenlot-surface-strong: __surface_strong__;
+    --screenlot-surface-border: __surface_border__;
+    --screenlot-button-start: __button_start__;
+    --screenlot-button-end: __button_end__;
+    --screenlot-button-hover-start: __button_hover_start__;
+    --screenlot-button-hover-end: __button_hover_end__;
+    --screenlot-button-text: __button_text__;
+    --screenlot-input-bg: __input_bg__;
+    --screenlot-input-border: __input_border__;
+    --screenlot-tab-bg: __tab_bg__;
+    --screenlot-tab-border: __tab_border__;
+    --screenlot-tab-active-bg: __tab_active_bg__;
+    --screenlot-tab-active-border: __tab_active_border__;
+    --screenlot-callout-start: __callout_start__;
+    --screenlot-callout-end: __callout_end__;
+    --screenlot-card-shadow: __card_shadow__;
+    --screenlot-metric-shadow: __metric_shadow__;
 }
 
 html, body, [class*="st-"], [data-testid="stMarkdownContainer"] {
@@ -26,20 +148,52 @@ h1, h2, h3, h4, .hero-title, .banner-title {
 
 [data-testid="stAppViewContainer"] {
     background:
-        radial-gradient(circle at 12% 0%, rgba(143, 130, 168, 0.25), transparent 26%),
-        radial-gradient(circle at 85% 12%, rgba(178, 166, 199, 0.13), transparent 22%),
-        linear-gradient(180deg, #050409 0%, #09070f 46%, #0d0914 100%);
+        radial-gradient(circle at 12% 0%, var(--screenlot-app-glow-primary), transparent 26%),
+        radial-gradient(circle at 85% 12%, var(--screenlot-app-glow-secondary), transparent 22%),
+        linear-gradient(
+            180deg,
+            var(--screenlot-app-bg-start) 0%,
+            var(--screenlot-app-bg-mid) 46%,
+            var(--screenlot-app-bg-end) 100%
+        );
     color: var(--screenlot-ink);
 }
 
 [data-testid="stSidebar"] {
     background:
-        linear-gradient(180deg, rgba(11, 9, 17, 0.98) 0%, rgba(15, 12, 24, 0.96) 100%);
+        linear-gradient(180deg, var(--screenlot-sidebar-start) 0%, var(--screenlot-sidebar-end) 100%);
     border-right: 1px solid var(--screenlot-edge);
+}
+
+[data-testid="stSidebar"] > div:first-child {
+    backdrop-filter: blur(18px);
 }
 
 [data-testid="stHeader"] {
     background: rgba(0, 0, 0, 0);
+}
+
+[data-testid="stAppViewContainer"] p,
+[data-testid="stAppViewContainer"] li,
+[data-testid="stAppViewContainer"] label,
+[data-testid="stAppViewContainer"] span,
+[data-testid="stAppViewContainer"] div,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] li,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] div {
+    color: var(--screenlot-ink);
+}
+
+[data-testid="stCaptionContainer"] p,
+[data-testid="stCaptionContainer"] span,
+.hero-copy,
+.section-copy,
+.small-note,
+.contributor-meta {
+    color: var(--screenlot-muted) !important;
+    line-height: 1.75;
 }
 
 .hero-shell,
@@ -56,7 +210,7 @@ h1, h2, h3, h4, .hero-title, .banner-title {
     border-radius: 28px;
     padding: 1.35rem 1.45rem;
     box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.34),
+        var(--screenlot-card-shadow),
         inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
@@ -95,8 +249,8 @@ h1, h2, h3, h4, .hero-title, .banner-title {
     height: 72px;
     border-radius: 22px;
     object-fit: contain;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(178, 166, 199, 0.18);
+    background: var(--screenlot-surface-soft);
+    border: 1px solid var(--screenlot-edge);
     padding: 0.55rem;
 }
 
@@ -112,14 +266,6 @@ h1, h2, h3, h4, .hero-title, .banner-title {
     font-size: 3.2rem;
     line-height: 0.96;
     margin: 0.3rem 0 0.85rem 0;
-}
-
-.hero-copy,
-.section-copy,
-.small-note,
-.contributor-meta {
-    color: var(--screenlot-muted);
-    line-height: 1.75;
 }
 
 .pill-strip,
@@ -139,11 +285,11 @@ h1, h2, h3, h4, .hero-title, .banner-title {
     color: var(--screenlot-ink);
     font-size: 0.82rem;
     padding: 0.35rem 0.78rem;
-    border: 1px solid rgba(178, 166, 199, 0.22);
+    border: 1px solid var(--screenlot-edge);
 }
 
 .pill {
-    background: linear-gradient(180deg, rgba(143, 130, 168, 0.18) 0%, rgba(92, 79, 115, 0.15) 100%);
+    background: linear-gradient(180deg, var(--screenlot-button-start) 0%, var(--screenlot-button-end) 100%);
 }
 
 .explanation-strip {
@@ -151,7 +297,7 @@ h1, h2, h3, h4, .hero-title, .banner-title {
 }
 
 .explanation-chip {
-    background: rgba(178, 166, 199, 0.1);
+    background: var(--screenlot-surface-soft);
     font-weight: 700;
 }
 
@@ -167,10 +313,11 @@ h1, h2, h3, h4, .hero-title, .banner-title {
 }
 
 .metric-card {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.015) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.07);
+    background: linear-gradient(180deg, var(--screenlot-surface-soft) 0%, var(--screenlot-surface-strong) 100%);
+    border: 1px solid var(--screenlot-surface-border);
     border-radius: 22px;
     padding: 1rem 1.05rem;
+    box-shadow: var(--screenlot-metric-shadow);
 }
 
 .metric-label {
@@ -188,8 +335,8 @@ h1, h2, h3, h4, .hero-title, .banner-title {
 }
 
 .contributor-card {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255,255,255,0.01) 100%);
-    border: 1px solid rgba(178, 166, 199, 0.18);
+    background: linear-gradient(180deg, var(--screenlot-surface-soft) 0%, var(--screenlot-surface-strong) 100%);
+    border: 1px solid var(--screenlot-edge);
     border-radius: 24px;
     padding: 1rem;
     min-height: 100%;
@@ -215,8 +362,8 @@ h1, h2, h3, h4, .hero-title, .banner-title {
 }
 
 .status-callout {
-    background: linear-gradient(180deg, rgba(143, 130, 168, 0.14) 0%, rgba(92, 79, 115, 0.08) 100%);
-    border: 1px solid rgba(178, 166, 199, 0.2);
+    background: linear-gradient(180deg, var(--screenlot-callout-start) 0%, var(--screenlot-callout-end) 100%);
+    border: 1px solid var(--screenlot-edge);
     border-radius: 22px;
     padding: 1rem 1.1rem;
 }
@@ -224,31 +371,41 @@ h1, h2, h3, h4, .hero-title, .banner-title {
 [data-testid="stButton"] > button,
 [data-testid="baseButton-secondary"] {
     border-radius: 16px;
-    border: 1px solid rgba(178, 166, 199, 0.22);
-    background: linear-gradient(180deg, rgba(143, 130, 168, 0.26) 0%, rgba(92, 79, 115, 0.28) 100%);
-    color: var(--screenlot-ink);
+    border: 1px solid var(--screenlot-edge);
+    background: linear-gradient(180deg, var(--screenlot-button-start) 0%, var(--screenlot-button-end) 100%);
+    color: var(--screenlot-button-text);
     font-weight: 700;
 }
 
 [data-testid="stButton"] > button:hover {
-    border-color: rgba(178, 166, 199, 0.38);
-    background: linear-gradient(180deg, rgba(160, 148, 186, 0.32) 0%, rgba(109, 96, 133, 0.34) 100%);
+    border-color: var(--screenlot-purple-soft);
+    background: linear-gradient(
+        180deg,
+        var(--screenlot-button-hover-start) 0%,
+        var(--screenlot-button-hover-end) 100%
+    );
 }
 
 [data-baseweb="select"] > div,
 [data-testid="stTextInputRootElement"] > div,
 [data-testid="stNumberInput"] input,
 [data-testid="stTextArea"] textarea {
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(178, 166, 199, 0.16) !important;
+    background: var(--screenlot-input-bg) !important;
+    border: 1px solid var(--screenlot-input-border) !important;
     border-radius: 16px !important;
+    color: var(--screenlot-ink) !important;
+}
+
+[data-baseweb="select"] * {
+    color: var(--screenlot-ink) !important;
 }
 
 [data-testid="stMetric"] {
-    background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-    border: 1px solid rgba(178, 166, 199, 0.15);
+    background: linear-gradient(180deg, var(--screenlot-surface-soft) 0%, var(--screenlot-surface-strong) 100%);
+    border: 1px solid var(--screenlot-edge);
     border-radius: 20px;
     padding: 0.75rem 1rem;
+    box-shadow: var(--screenlot-metric-shadow);
 }
 
 [data-testid="stMetricLabel"],
@@ -266,13 +423,14 @@ div[data-baseweb="tab-list"] {
 
 button[role="tab"] {
     border-radius: 999px !important;
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid rgba(178, 166, 199, 0.12) !important;
+    background: var(--screenlot-tab-bg) !important;
+    border: 1px solid var(--screenlot-tab-border) !important;
+    color: var(--screenlot-ink) !important;
 }
 
 button[role="tab"][aria-selected="true"] {
-    background: rgba(143, 130, 168, 0.18) !important;
-    border-color: rgba(178, 166, 199, 0.32) !important;
+    background: var(--screenlot-tab-active-bg) !important;
+    border-color: var(--screenlot-tab-active-border) !important;
 }
 
 @media (max-width: 900px) {
@@ -286,3 +444,9 @@ button[role="tab"][aria-selected="true"] {
     }
 }
 """
+    for key, value in tokens.items():
+        css = css.replace(f"__{key}__", str(value))
+    return css
+
+
+GLOBAL_CSS = build_global_css(DEFAULT_THEME_MODE)

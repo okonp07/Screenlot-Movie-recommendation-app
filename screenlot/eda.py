@@ -10,6 +10,7 @@ except ImportError:  # pragma: no cover - handled at runtime in the app.
     px = None
 
 from .model_summary import humanize_model_name, leaderboard_rows
+from .styles import plotly_template
 
 
 PALETTE = ["#d9a441", "#4bb3c3", "#d45769", "#7cd38b", "#f4ead5"]
@@ -20,7 +21,7 @@ def _require_runtime() -> None:
         raise RuntimeError("plotly and pandas are required for the ScreenLot EDA views.")
 
 
-def ratings_distribution(train: Any) -> Any:
+def ratings_distribution(train: Any, theme_mode: str = "dark") -> Any:
     _require_runtime()
     figure = px.histogram(
         train,
@@ -29,11 +30,11 @@ def ratings_distribution(train: Any) -> Any:
         title="Distribution of User Ratings",
         color_discrete_sequence=[PALETTE[0]],
     )
-    figure.update_layout(template="plotly_dark", bargap=0.08)
+    figure.update_layout(template=plotly_template(theme_mode), bargap=0.08)
     return figure
 
 
-def movies_per_year(catalog: Any) -> Any:
+def movies_per_year(catalog: Any, theme_mode: str = "dark") -> Any:
     _require_runtime()
     frame = (
         catalog.dropna(subset=["release_year"])
@@ -49,11 +50,11 @@ def movies_per_year(catalog: Any) -> Any:
         title="Movies Released Per Year",
     )
     figure.update_traces(line_color=PALETTE[1])
-    figure.update_layout(template="plotly_dark")
+    figure.update_layout(template=plotly_template(theme_mode))
     return figure
 
 
-def genre_distribution(catalog: Any, top_n: int = 12) -> Any:
+def genre_distribution(catalog: Any, top_n: int = 12, theme_mode: str = "dark") -> Any:
     _require_runtime()
     frame = (
         catalog.assign(genres=catalog["genres"].fillna("").str.split("|"))
@@ -73,11 +74,16 @@ def genre_distribution(catalog: Any, top_n: int = 12) -> Any:
         color="movie_count",
         color_continuous_scale=["#2e425c", "#d9a441"],
     )
-    figure.update_layout(template="plotly_dark", coloraxis_showscale=False)
+    figure.update_layout(template=plotly_template(theme_mode), coloraxis_showscale=False)
     return figure
 
 
-def top_rated_movies(catalog: Any, min_ratings: int = 50, top_n: int = 10) -> Any:
+def top_rated_movies(
+    catalog: Any,
+    min_ratings: int = 50,
+    top_n: int = 10,
+    theme_mode: str = "dark",
+) -> Any:
     _require_runtime()
     frame = (
         catalog.loc[catalog["rating_count"].fillna(0) >= min_ratings, ["title", "mean_rating", "rating_count"]]
@@ -94,11 +100,11 @@ def top_rated_movies(catalog: Any, min_ratings: int = 50, top_n: int = 10) -> An
         color="rating_count",
         color_continuous_scale=["#4bb3c3", "#d9a441"],
     )
-    figure.update_layout(template="plotly_dark", coloraxis_showscale=False)
+    figure.update_layout(template=plotly_template(theme_mode), coloraxis_showscale=False)
     return figure
 
 
-def top_directors(catalog: Any, top_n: int = 10) -> Any | None:
+def top_directors(catalog: Any, top_n: int = 10, theme_mode: str = "dark") -> Any | None:
     _require_runtime()
 
     director_column = next(
@@ -130,13 +136,14 @@ def top_directors(catalog: Any, top_n: int = 10) -> Any | None:
         title="Most Frequent Directors",
         color_discrete_sequence=[PALETTE[2]],
     )
-    figure.update_layout(template="plotly_dark")
+    figure.update_layout(template=plotly_template(theme_mode))
     return figure
 
 
 def benchmark_metric_bars(
     model_card: dict[str, Any] | None,
     split: str = "test",
+    theme_mode: str = "dark",
 ) -> Any | None:
     _require_runtime()
     rows = leaderboard_rows(model_card, split=split)
@@ -161,13 +168,14 @@ def benchmark_metric_bars(
         title=f"{split.title()} Ranking Metrics",
         color_discrete_sequence=PALETTE[:3],
     )
-    figure.update_layout(template="plotly_dark", legend_title_text="")
+    figure.update_layout(template=plotly_template(theme_mode), legend_title_text="")
     return figure
 
 
 def benchmark_tradeoff_scatter(
     model_card: dict[str, Any] | None,
     split: str = "test",
+    theme_mode: str = "dark",
 ) -> Any | None:
     _require_runtime()
     rows = leaderboard_rows(model_card, split=split)
@@ -187,11 +195,11 @@ def benchmark_tradeoff_scatter(
         title=f"{split.title()} Coverage vs Recall",
         color_discrete_sequence=PALETTE,
     )
-    figure.update_layout(template="plotly_dark")
+    figure.update_layout(template=plotly_template(theme_mode))
     return figure
 
 
-def feedback_actions_chart(feedback_frame: Any) -> Any | None:
+def feedback_actions_chart(feedback_frame: Any, theme_mode: str = "dark") -> Any | None:
     _require_runtime()
     if feedback_frame is None or getattr(feedback_frame, "empty", True):
         return None
@@ -213,11 +221,15 @@ def feedback_actions_chart(feedback_frame: Any) -> Any | None:
         color="action",
         color_discrete_sequence=PALETTE[:3],
     )
-    figure.update_layout(template="plotly_dark", showlegend=False)
+    figure.update_layout(template=plotly_template(theme_mode), showlegend=False)
     return figure
 
 
-def feedback_top_titles_chart(feedback_frame: Any, top_n: int = 8) -> Any | None:
+def feedback_top_titles_chart(
+    feedback_frame: Any,
+    top_n: int = 8,
+    theme_mode: str = "dark",
+) -> Any | None:
     _require_runtime()
     if feedback_frame is None or getattr(feedback_frame, "empty", True):
         return None
@@ -241,5 +253,5 @@ def feedback_top_titles_chart(feedback_frame: Any, top_n: int = 8) -> Any | None
         title="Top Feedback Titles",
         color_discrete_sequence=PALETTE[:3],
     )
-    figure.update_layout(template="plotly_dark")
+    figure.update_layout(template=plotly_template(theme_mode))
     return figure

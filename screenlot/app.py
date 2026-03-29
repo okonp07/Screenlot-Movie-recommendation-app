@@ -50,7 +50,10 @@ from .recommender import (
     load_trained_screenlot_artifact,
 )
 from .runtime import FEEDBACK_LOG_PATH, FULL_DATA_DIR, PACKAGED_DATA_DIR, STATE_DIR
-from .styles import GLOBAL_CSS
+from .styles import build_global_css, normalize_theme_mode
+
+
+THEME_TOGGLE_KEY = "screenlot_light_mode"
 
 
 def _safe_image(path: Path) -> str | None:
@@ -63,7 +66,13 @@ def _render_banner_image() -> None:
         st.image(banner_path, use_container_width=True)
 
 
-def _apply_page_config() -> None:
+def _current_theme_mode() -> str:
+    return normalize_theme_mode(
+        "light" if bool(st.session_state.get(THEME_TOGGLE_KEY, False)) else "dark"
+    )
+
+
+def _apply_page_config() -> str:
     page_icon = _safe_image(SCREENLOT_LOGO)
     st.set_page_config(
         page_title=APP_NAME,
@@ -71,7 +80,9 @@ def _apply_page_config() -> None:
         layout="wide",
         initial_sidebar_state="expanded",
     )
-    st.markdown(f"<style>{GLOBAL_CSS}</style>", unsafe_allow_html=True)
+    theme_mode = _current_theme_mode()
+    st.markdown(f"<style>{build_global_css(theme_mode)}</style>", unsafe_allow_html=True)
+    return theme_mode
 
 
 @st.cache_data(show_spinner=False)
@@ -337,13 +348,13 @@ def _render_benchmark_table(model_card: dict[str, Any] | None) -> None:
         )
 
 
-def _render_model_performance_panel(model_card: dict[str, Any] | None) -> None:
+def _render_model_performance_panel(model_card: dict[str, Any] | None, theme_mode: str) -> None:
     if not model_card:
         st.info("Train the ScreenLot artifact to unlock the model-performance dashboard.")
         return
 
-    metric_chart = eda.benchmark_metric_bars(model_card, split="test")
-    tradeoff_chart = eda.benchmark_tradeoff_scatter(model_card, split="test")
+    metric_chart = eda.benchmark_metric_bars(model_card, split="test", theme_mode=theme_mode)
+    tradeoff_chart = eda.benchmark_tradeoff_scatter(model_card, split="test", theme_mode=theme_mode)
     chart_left, chart_right = st.columns(2, gap="large")
     with chart_left:
         if metric_chart is not None:
@@ -360,6 +371,7 @@ def _render_sidebar(
     readiness: dict[str, bool],
     snapshot: dict[str, Any] | None,
     feedback_snapshot: dict[str, Any],
+    theme_mode: str,
 ) -> str:
     with st.sidebar:
         logo_path = _safe_image(SCREENLOT_LOGO)
@@ -368,6 +380,13 @@ def _render_sidebar(
 
         st.markdown("### ScreenLot")
         st.caption("Cinematic movie discovery from the original recommendation project.")
+        st.markdown("### Appearance")
+        st.toggle(
+            "Light mode",
+            key=THEME_TOGGLE_KEY,
+            help="Switch between ScreenLot's dark cinematic theme and a bright light variation.",
+        )
+        st.caption(f"Current theme: {theme_mode.title()}")
         page = st.radio("Navigate", NAVIGATION, index=0)
 
         st.markdown("### Data Folder")
@@ -452,12 +471,15 @@ def _render_home(
 
     st.markdown("### Product Snapshot")
     if metrics:
+        catalog_size = f"{metrics['movies']:,}"
+        rating_count = f"{metrics['ratings']:,}"
+        user_count = f"{metrics['users']:,}"
         st.markdown(
             (
                 "<div class='metric-strip'>"
-                f"{_metric_card('Catalog Size', f'{metrics['movies']:,}')}"
-                f"{_metric_card('Ratings', f'{metrics['ratings']:,}')}"
-                f"{_metric_card('Users', f'{metrics['users']:,}')}"
+                f"{_metric_card('Catalog Size', catalog_size)}"
+                f"{_metric_card('Ratings', rating_count)}"
+                f"{_metric_card('Users', user_count)}"
                 "</div>"
             ),
             unsafe_allow_html=True,
@@ -494,6 +516,7 @@ def _render_recommendations(
     snapshot: dict[str, Any] | None,
     model_card: dict[str, Any] | None,
     feedback_snapshot: dict[str, Any],
+    theme_mode: str,
 ) -> None:
     st.markdown("## Recommendation Engine")
     st.write(
@@ -590,7 +613,7 @@ def _render_recommendations(
                 f"ScreenLot is currently serving **{snapshot['model_label']}** based on the "
                 "latest validation leaderboard."
             )
-        _render_model_performance_panel(model_card)
+        _render_model_performance_panel(model_card, theme_mode)
 
     if st.button("Generate ScreenLot picks", use_container_width=True):
         if len(favorite_titles) < 2:
@@ -683,7 +706,13 @@ def _render_recommendations(
         _render_feedback_snapshot(feedback_snapshot)
 
 
-def _render_eda(bundle, catalog, model_card: dict[str, Any] | None, feedback_frame) -> None:
+def _render_eda(
+    bundle,
+    catalog,
+    model_card: dict[str, Any] | None,
+    feedback_frame,
+    theme_mode: str,
+) -> None:
     st.markdown("## Exploratory Data Analysis")
     st.write(
         "This section turns the project visuals into live charts so the product can "
@@ -698,41 +727,41 @@ def _render_eda(bundle, catalog, model_card: dict[str, Any] | None, feedback_fra
         if bundle is None or catalog is None:
             st.info("Ratings visuals become available as soon as the dataset files are loaded locally.")
         else:
-            st.plotly_chart(eda.ratings_distribution(bundle.train), use_container_width=True)
-            st.plotly_chart(eda.top_rated_movies(catalog), use_container_width=True)
+            st.plotly_chart(eda.ratings_distribution(bundle.train, theme_mode=theme_mode), use_container_width=True)
+            st.plotly_chart(eda.top_rated_movies(catalog, theme_mode=theme_mode), use_container_width=True)
 
     with genre_tab:
         if catalog is None:
             st.info("Genre visuals become available as soon as the catalog is loaded.")
         else:
-            st.plotly_chart(eda.genre_distribution(catalog), use_container_width=True)
+            st.plotly_chart(eda.genre_distribution(catalog, theme_mode=theme_mode), use_container_width=True)
 
     with release_tab:
         if catalog is None:
             st.info("Release-year visuals become available as soon as the catalog is loaded.")
         else:
-            st.plotly_chart(eda.movies_per_year(catalog), use_container_width=True)
+            st.plotly_chart(eda.movies_per_year(catalog, theme_mode=theme_mode), use_container_width=True)
 
     with director_tab:
         if catalog is None:
             st.info("Director-level visuals become available once the catalog is loaded.")
         else:
-            director_figure = eda.top_directors(catalog)
+            director_figure = eda.top_directors(catalog, theme_mode=theme_mode)
             if director_figure is None:
                 st.info("Director-level visuals will appear once `imdb_data.csv` is available.")
             else:
                 st.plotly_chart(director_figure, use_container_width=True)
 
     with model_tab:
-        _render_model_performance_panel(model_card)
+        _render_model_performance_panel(model_card, theme_mode)
 
     with feedback_tab:
         if feedback_frame is None or getattr(feedback_frame, "empty", True):
             st.info("User feedback charts will appear after people start reacting to recommendations.")
         else:
             _render_feedback_snapshot(feedback_summary())
-            action_chart = eda.feedback_actions_chart(feedback_frame)
-            title_chart = eda.feedback_top_titles_chart(feedback_frame)
+            action_chart = eda.feedback_actions_chart(feedback_frame, theme_mode=theme_mode)
+            title_chart = eda.feedback_top_titles_chart(feedback_frame, theme_mode=theme_mode)
             chart_left, chart_right = st.columns(2, gap="large")
             with chart_left:
                 if action_chart is not None:
@@ -798,6 +827,7 @@ def _render_report(
     model_card: dict[str, Any] | None,
     feedback_snapshot: dict[str, Any],
     feedback_frame,
+    theme_mode: str,
 ) -> None:
     st.markdown("## Report and Conclusion")
     st.write(
@@ -834,7 +864,7 @@ def _render_report(
         "open-data pipeline, and compare user acceptance against these offline ranking metrics."
     )
     st.markdown("### Live benchmark detail")
-    _render_model_performance_panel(model_card)
+    _render_model_performance_panel(model_card, theme_mode)
 
     st.markdown("### Recommendation feedback")
     _render_feedback_snapshot(feedback_snapshot)
@@ -843,11 +873,11 @@ def _render_report(
     else:
         feedback_left, feedback_right = st.columns(2, gap="large")
         with feedback_left:
-            action_chart = eda.feedback_actions_chart(feedback_frame)
+            action_chart = eda.feedback_actions_chart(feedback_frame, theme_mode=theme_mode)
             if action_chart is not None:
                 st.plotly_chart(action_chart, use_container_width=True)
         with feedback_right:
-            title_chart = eda.feedback_top_titles_chart(feedback_frame)
+            title_chart = eda.feedback_top_titles_chart(feedback_frame, theme_mode=theme_mode)
             if title_chart is not None:
                 st.plotly_chart(title_chart, use_container_width=True)
         st.caption(f"Feedback log path: {FEEDBACK_LOG_PATH}")
@@ -910,7 +940,7 @@ def _render_suggestions() -> None:
 
 
 def main() -> None:
-    _apply_page_config()
+    theme_mode = _apply_page_config()
 
     data_dir = DEFAULT_DATA_DIR
     readiness = dataset_status(data_dir)
@@ -937,6 +967,7 @@ def main() -> None:
         readiness=readiness,
         snapshot=snapshot,
         feedback_snapshot=feedback_snapshot,
+        theme_mode=theme_mode,
     )
 
     if data_notice:
@@ -966,9 +997,10 @@ def main() -> None:
             snapshot,
             saved_model_card,
             feedback_snapshot,
+            theme_mode,
         )
     elif page == "EDA":
-        _render_eda(bundle, catalog, saved_model_card, feedback_frame)
+        _render_eda(bundle, catalog, saved_model_card, feedback_frame, theme_mode)
     elif page == "About":
         _render_about()
     elif page == "Report and Conclusion":
@@ -980,6 +1012,7 @@ def main() -> None:
             saved_model_card,
             feedback_snapshot,
             feedback_frame,
+            theme_mode,
         )
     elif page == "Suggestions":
         _render_suggestions()
